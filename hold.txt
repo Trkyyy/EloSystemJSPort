@@ -1,0 +1,61 @@
+document.addEventListener("DOMContentLoaded", addButtonsToList);
+
+// Function to create and add buttons to the list
+function addButtonsToList() {
+    // Input
+    const buttons   = 6
+
+    const rowCon    = document.getElementById("rowCon")
+    // Create buttons/2 rows 
+    for(let t = 1; t <= buttons/2; t++){
+        const row = document.createElement("div");
+        row.id = 'row' + t;
+        row.classList.add('row', 'row-add');
+        rowCon.appendChild(row)
+    }
+
+    // Add buttons buttons to grid
+    for (let i = 1; i <= buttons; i++) {
+        let rowNum   = Math.ceil(i/2)
+        // Get row
+        const row    = document.getElementById("row" + rowNum)
+        // Create a new button element
+        const button = document.createElement("button");
+
+        // Set styling of button
+        button.classList.add('btn','btn-primary','btn-block', 'square-btn');
+
+        // Set the button's text content
+        button.textContent = "Button " + i;
+
+        // Use an immediately invoked function expression (IIFE) to capture the current value of i
+        (function (buttonNumber) {
+            // Add an event listener to the button (you can replace the alert with any other functionality)
+            button.addEventListener("click", async function () {
+                try {
+                    const response = await fetch('/api/gpt');
+                    const data = await response.json();
+                    console.log(data.answer);
+                  } catch (error) {
+                    console.error(error);
+                    console.log('Error occurred. Please try again.');
+                  }
+            });
+        })(i);
+
+        /* If even button number, force next button onto next line - Unneeded? - Yes 
+        // if (i % 2 === 0){
+        //     const nextLine = document.createElement("div");
+        //     nextLine.classList.add('w-100');
+        //     row.appendChild(nextLine);
+        // }
+
+        */
+
+        // Create a list item to hold the button and append it to the list
+        const listItem = document.createElement("div");
+        listItem.classList.add('col-md-3','mb-3'); // Set styling of div - we can parameterise the grid size
+        listItem.appendChild(button);
+        row.appendChild(listItem);
+    }
+}

@@ -1,0 +1,168 @@
+[{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354c8"
+  },
+  "idMapStats": 1000,
+  "MapName": "NoMercy",
+  "Maps": 5
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354c9"
+  },
+  "idMapStats": 1001,
+  "MapName": "CrashCourse",
+  "Maps": 2
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354ca"
+  },
+  "idMapStats": 1002,
+  "MapName": "DeathToll",
+  "Maps": 5
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354cb"
+  },
+  "idMapStats": 1003,
+  "MapName": "DeadAir",
+  "Maps": 5
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354cc"
+  },
+  "idMapStats": 1004,
+  "MapName": "BloodHarvest",
+  "Maps": 5
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354cd"
+  },
+  "idMapStats": 1005,
+  "MapName": "TheSacrifice",
+  "Maps": 3
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354ce"
+  },
+  "idMapStats": 1006,
+  "MapName": "DeadCenter",
+  "Maps": 4
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354cf"
+  },
+  "idMapStats": 1007,
+  "MapName": "Passing",
+  "Maps": 3
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354d0"
+  },
+  "idMapStats": 1008,
+  "MapName": "DarkCarnival",
+  "Maps": 5
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354d1"
+  },
+  "idMapStats": 1009,
+  "MapName": "SwampFever",
+  "Maps": 4
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354d2"
+  },
+  "idMapStats": 1010,
+  "MapName": "HardRain",
+  "Maps": 5
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354d3"
+  },
+  "idMapStats": 1011,
+  "MapName": "Parish",
+  "Maps": 5
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354d4"
+  },
+  "idMapStats": 1012,
+  "MapName": "ColdStream",
+  "Maps": 4
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354d5"
+  },
+  "idMapStats": 1013,
+  "MapName": "BloodHarvest",
+  "Maps": 5
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354d6"
+  },
+  "idMapStats": 1014,
+  "MapName": "LastStand",
+  "Maps": 2
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354d7"
+  },
+  "idMapStats": 1015,
+  "MapName": "BloodProof",
+  "Maps": 3
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354d8"
+  },
+  "idMapStats": 1016,
+  "MapName": "DayBreak",
+  "Maps": 5
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354d9"
+  },
+  "idMapStats": 1017,
+  "MapName": "DevilMountain",
+  "Maps": 5
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354da"
+  },
+  "idMapStats": 1018,
+  "MapName": "Diescraper",
+  "Maps": 4
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354db"
+  },
+  "idMapStats": 1019,
+  "MapName": "Precinct84",
+  "Maps": 4
+},
+{
+  "_id": {
+    "$oid": "64b98569e1190d6afe5354dc"
+  },
+  "idMapStats": 1020,
+  "MapName": "UrbanFlight",
+  "Maps": 4
+}]
