@@ -1,9 +1,7 @@
 /* Add this CSS to center-align the checkboxes and prevent them from stacking vertically */
-.checkbox-container {
-    flex-wrap: wrap
-}
-  
-.form-check {
-    display: inline-block;
-    margin: 10px;
-}
+/* Equal width for each checkbox in the top half */
+#checkboxes .form-check {
+    flex-basis: 25%; /* You can adjust this percentage as needed */
+    margin-bottom: 10px; /* Optional: Add some spacing between checkboxes */
+  }
+

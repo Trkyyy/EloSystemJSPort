@@ -1,5 +1,6 @@
 // Instaniate consts
 const checkedPlayerNames = [];
+var allPlayers = [];
 
 // Call needed functions when page loads
 document.addEventListener("DOMContentLoaded", async function() {
@@ -22,8 +23,9 @@ async function getPlayers() {
         const response = await fetch('/api/getPlayerStats');
         // Convert response to JSON object
         const data = await response.json();
-        //Log response for debuging
-        console.debug("Get all player stats API response: " + JSON.stringify(data));
+        //Log response for debuging - Working well so commenting log
+        // console.debug("Get all player stats API response: " + JSON.stringify(data));
+        allPlayers = data;
         //Call method to add checkboxes
         appendCheckboxes(data);
     }catch(error){
@@ -114,8 +116,10 @@ document.addEventListener("DOMContentLoaded", async function() {
         if(checkedPlayerNames.length == 8){
             // Calculate best teams
             let closestEloTeams = findClosestEloTeams();
-            // Log closest teams
-            console.log("Closest two teams: " + JSON.stringify(closestEloTeams));
+            // Log closest teams - Clogging logs so disabled
+            // console.log("Closest three teams: " + JSON.stringify(closestEloTeams));
+            // Call function to insert data to tables
+            addTeamsToUI(closestEloTeams);
         }else
         {
             alert("Please select 8 players.");
@@ -127,33 +131,65 @@ document.addEventListener("DOMContentLoaded", async function() {
 
 class Team {
     constructor(playerA, playerB, playerC, playerD) {
-        this.players = [playerA, playerB, playerC, playerD];
+        this.players = [
+            getPlayerObjectByName(playerA), 
+            getPlayerObjectByName(playerB), 
+            getPlayerObjectByName(playerC), 
+            getPlayerObjectByName(playerD)
+        ];
     }
 
     // Checks if two teams have duplicate players or isnt unique
     sameTeam(otherTeam) {
-        let thisPlayers = this.players;
-        let otherPlayers = otherTeam.players;
-        return (
-            thisPlayers.includes(otherPlayers[0]) &&
-            thisPlayers.includes(otherPlayers[1]) &&
-            thisPlayers.includes(otherPlayers[2]) &&
-            thisPlayers.includes(otherPlayers[3])
-        );
+        //This is terrible, but here we are - lots of trouble with bad teams
+        if(this.findPlayerBool(otherTeam.players[0].PlayerName)){
+            return false;
+        }else if(this.findPlayerBool(otherTeam.players[1].PlayerName)){
+            return false;
+        }else if(this.findPlayerBool(otherTeam.players[2].PlayerName)){
+            return false;
+        }else if(this.findPlayerBool(otherTeam.players[3].PlayerName)){
+            return false;
+        }else {
+            return true;
+        }
     }
 
     // Calculate tean elo average
     calculateTeamEloAvg() {
         let sum = 0;
+        let validPlayers = 0;
+    
         for (const player of this.players) {
-            sum += player.elo;
+            if (player && player.PlayerElo !== undefined) {
+                sum += player.PlayerElo;
+                validPlayers++;
+            }
         }
-        return sum / this.players.length;
+    
+        return sum / validPlayers;
     }
 
     // Returns true if player in team
     findPlayer(player) {
-        return this.players.includes(player);
+        for (const obj of this.players) {
+            if (obj.PlayerName === player) {
+              return obj;
+            }
+        }
+    }
+
+    findPlayerBool(player) {
+        for (const obj of this.players) {
+            if (obj.PlayerName === player) {
+                if(obj != null){
+                    return true;
+                }else
+                {
+                    return false;
+                }
+            }
+        }
     }
 }
 
@@ -163,6 +199,11 @@ class EloDifferenceAndIndex {
         this.eloDiff = eloDiff;
         this.index = index;
     }
+}
+
+function getPlayerObjectByName(playerName) {
+    const player = allPlayers.find(player => player.PlayerName === playerName);
+    return player || null;
 }
 
 // Generates all possible teams
@@ -180,9 +221,10 @@ function generateAllTeams(playersInGameL) {
                         playersInGameL[d]
                     );
 
+
                     let unique = true;
                     for (let i = 0; i < allTeams.length; i++) {
-                        if (allTeams[i].sameTeam(testTeam)) {
+                        if (allTeams[i].sameTeam(testTeam) == false) {
                             unique = false;
                             break;
                         }
@@ -202,40 +244,74 @@ function generateAllTeams(playersInGameL) {
 // 
 function findClosestEloTeams() {
     let allTeams = generateAllTeams(checkedPlayerNames);
-    let teamIndexes = [];
-    let eloDiffAndIndex = [];
+    let closestTeams = [];
+    let minEloDiff = Number.MAX_VALUE;
 
-    for (let a = 0; a < allTeams.length; a++) {
-        for (let b = 0; b < allTeams.length; b++) {
-            let tA = allTeams[a];
-            let tB = allTeams[b];
-            // Ensure teams dont include duplicate players (maybe should be done earlier)
-            let compute = true;
-            compute = compute && !tB.findPlayer(tA.players[0]);
-            compute = compute && !tB.findPlayer(tA.players[1]);
-            compute = compute && !tB.findPlayer(tA.players[2]);
-            compute = compute && !tB.findPlayer(tA.players[3]);
-            
-            if (compute) {
+    for (let i = 0; i < allTeams.length; i++) {
+        for (let j = i + 1; j < allTeams.length; j++) {
+            let tA = allTeams[i];
+            let tB = allTeams[j];
+
+            if (!tA.sameTeam(tB)) {
                 let eloDifference = Math.abs(tA.calculateTeamEloAvg() - tB.calculateTeamEloAvg());
-                let tempIndexArray = [a, b];
-                teamIndexes.push(tempIndexArray);
-                let tempDoubleArray = new EloDifferenceAndIndex(eloDifference, teamIndexes.length - 1);
-                eloDiffAndIndex.push(tempDoubleArray);
+                
+                if (eloDifference < minEloDiff) {
+                    closestTeams = [[tA, tB]];
+                    minEloDiff = eloDifference;
+                } else if (eloDifference === minEloDiff) {
+                    closestTeams.push([tA, tB]);
+                }
             }
         }
     }
 
-    eloDiffAndIndex.sort((x, y) => x.eloDiff - y.eloDiff);
+    return closestTeams.slice(0, Math.min(3, closestTeams.length));
+}
 
-    let closestTeams = [];
+/* Function to add team details to tables
+[
+    [{"players":["Aron","Adam","Aaron","JackS"]},{"players":["Bradley","Gorman","Mees","Scott"]}],
+    [{"players":["Aron","Adam","Aaron","Bradley"]},{"players":["JackS","Gorman","Mees","Scott"]}],
+    [{"players":["Aron","Adam","Aaron","Gorman"]},{"players":["JackS","Bradley","Mees","Scott"]}]
+]
+*/
 
-    for (let i = 0; i < Math.min(3, eloDiffAndIndex.length); i++) {
-        let index = eloDiffAndIndex[i].index;
-        let closestTeam1 = allTeams[teamIndexes[index][0]];
-        let closestTeam2 = allTeams[teamIndexes[index][1]];
-        closestTeams.push([closestTeam1, closestTeam2]);
+// Function to set the text of an element by ID
+function setTextById(id, text) {
+    const element = document.getElementById(id);
+    if (element) {
+      element.textContent = text;
     }
+  }
 
-    return closestTeams;
+
+function addTeamsToUI(teamsArray) {
+    // Iterate over teamsArray
+    for (let i = 0; i < teamsArray.length; i++) {
+        const teamSet = teamsArray[i];
+        // Iterate over each team (team1 and team2)
+        for (let j = 0; j < 2; j++) {
+        const team = teamSet[j];
+        const players = team.players;
+        
+        // Iterate over each player and set the text inside corresponding elements
+        for (let k = 0; k < 4; k++) {
+            const nameElementId = `sort${i}team${j + 1}playerName${k + 1}`;
+            const eloElementId = `sort${i}team${j + 1}playerElo${k + 1}`;
+            setTextById(nameElementId, players[k].PlayerName);
+            setTextById(eloElementId, players[k].PlayerElo);
+        }
+
+        // Set Average Elo
+        let tempTeam = new Team(
+            players[0].PlayerName,
+            players[1].PlayerName,
+            players[2].PlayerName,
+            players[3].PlayerName
+        );
+        console.log(tempTeam)
+        const elementId = `sort${i}team${j + 1}averageElo`;
+        setTextById(elementId, tempTeam.calculateTeamEloAvg());
+        }
+  }
 }
