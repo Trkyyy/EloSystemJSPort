@@ -260,15 +260,15 @@ function findClosestEloTeams() {
             if (!tA.uniqueTeams(tB)) {
                 let eloDifference = Math.abs(tA.calculateTeamEloAvg() - tB.calculateTeamEloAvg());
                 //Ensure that oposite match doesnt exist
-                if(closestTeams.find(element => element == [tB,tA]) === undefined)
-                {
+                // if(closestTeams.find(element => element == [tB,tA]) === undefined)
+                // { This makes only 1 team be returned, but still needs fixed
                     if (eloDifference < minEloDiff) {
                         closestTeams = [[tA, tB]];
                         minEloDiff = eloDifference;
                     } else if (eloDifference === minEloDiff) {
                         closestTeams.push([tA, tB]);
                     }
-                }
+                // }
             }
         }
     }
