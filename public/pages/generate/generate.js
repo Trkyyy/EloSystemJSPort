@@ -142,16 +142,19 @@ class Team {
     // Checks if two teams have duplicate players or isnt unique
     sameTeam(otherTeam) {
         //This is terrible, but here we are - lots of trouble with bad teams
-        if(this.findPlayerBool(otherTeam.players[0].PlayerName)){
-            return false;
-        }else if(this.findPlayerBool(otherTeam.players[1].PlayerName)){
-            return false;
-        }else if(this.findPlayerBool(otherTeam.players[2].PlayerName)){
-            return false;
-        }else if(this.findPlayerBool(otherTeam.players[3].PlayerName)){
-            return false;
-        }else {
+        if(this.findPlayerBool(otherTeam.players[0].PlayerName) && this.findPlayerBool(otherTeam.players[1].PlayerName) && this.findPlayerBool(otherTeam.players[2].PlayerName) && this.findPlayerBool(otherTeam.players[3].PlayerName)){
             return true;
+        }else {
+            return false;
+        }
+    }
+
+    uniqueTeams(otherTeam) {
+        //This is terrible, but here we are - lots of trouble with bad teams
+        if(this.findPlayerBool(otherTeam.players[0].PlayerName) || this.findPlayerBool(otherTeam.players[1].PlayerName) || this.findPlayerBool(otherTeam.players[2].PlayerName) || this.findPlayerBool(otherTeam.players[3].PlayerName)){
+            return true;
+        }else {
+            return false;
         }
     }
 
@@ -206,6 +209,8 @@ function getPlayerObjectByName(playerName) {
     return player || null;
 }
 
+
+
 // Generates all possible teams
 function generateAllTeams(playersInGameL) {
     let allTeams = [];
@@ -224,7 +229,7 @@ function generateAllTeams(playersInGameL) {
 
                     let unique = true;
                     for (let i = 0; i < allTeams.length; i++) {
-                        if (allTeams[i].sameTeam(testTeam) == false) {
+                        if (allTeams[i].sameTeam(testTeam)) {
                             unique = false;
                             break;
                         }
@@ -241,25 +246,28 @@ function generateAllTeams(playersInGameL) {
     return allTeams;
 }
 
-// 
+// This works - but needs logic to check that teamX, teamY and teamY, teamX combinations are the same
 function findClosestEloTeams() {
     let allTeams = generateAllTeams(checkedPlayerNames);
     let closestTeams = [];
     let minEloDiff = Number.MAX_VALUE;
 
     for (let i = 0; i < allTeams.length; i++) {
-        for (let j = i + 1; j < allTeams.length; j++) {
+        for (let j = 0; j < allTeams.length; j++) {
             let tA = allTeams[i];
             let tB = allTeams[j];
 
-            if (!tA.sameTeam(tB)) {
+            if (!tA.uniqueTeams(tB)) {
                 let eloDifference = Math.abs(tA.calculateTeamEloAvg() - tB.calculateTeamEloAvg());
-                
-                if (eloDifference < minEloDiff) {
-                    closestTeams = [[tA, tB]];
-                    minEloDiff = eloDifference;
-                } else if (eloDifference === minEloDiff) {
-                    closestTeams.push([tA, tB]);
+                //Ensure that oposite match doesnt exist
+                if(closestTeams.find(element => element == [tB,tA]) === undefined)
+                {
+                    if (eloDifference < minEloDiff) {
+                        closestTeams = [[tA, tB]];
+                        minEloDiff = eloDifference;
+                    } else if (eloDifference === minEloDiff) {
+                        closestTeams.push([tA, tB]);
+                    }
                 }
             }
         }
