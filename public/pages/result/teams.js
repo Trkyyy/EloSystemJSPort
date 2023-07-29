@@ -1,3 +1,7 @@
+// Track the number of players in each team
+let team1Count = 0;
+let team2Count = 0;
+
 // Function to fetch player list from the API
 async function fetchPlayerList() {
   try {
@@ -86,9 +90,10 @@ function handleCheckboxChange(checkbox, teamNumber) {
     const teamTable = document
       .getElementById(`team${teamNumber}Table`)
       .getElementsByTagName("tbody")[0];
-    const newRow = teamTable.insertRow();
-    const cell = newRow.insertCell();
+    const newRow = teamTable.insertRow(0);
+    const cell = newRow.insertCell(0);
     cell.textContent = playerName;
+    deleteRowWithEmptyCell(teamTable);
   } else {
     // If the checkbox was unchecked, remove the player from the team
     removePlayerFromTeam(playerName, teamNumber);
@@ -105,13 +110,15 @@ function removePlayerFromTeam(playerName, teamNumber) {
     const cells = teamRows[i].getElementsByTagName("td");
     if (cells[0].textContent === playerName) {
       teamTable.deleteRow(i);
+      const newRow = teamTable.insertRow();
+      const cell = newRow.insertCell();
+      cell.innerHTML = "&nbsp;";
       break;
     }
   }
 }
 
-function deleteRowWithEmptyCell() {
-  const table = document.getElementById("myTable");
+function deleteRowWithEmptyCell(table) {
   const rows = table.getElementsByTagName("tr");
 
   for (let i = 0; i < rows.length; i++) {
