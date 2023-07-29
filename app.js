@@ -24,7 +24,7 @@ app.get('/api/getPlayerStats', async (req, res) => {
         // Get playerStats collection
         const collection = db.collection('Players');
         // Return player stats as JSON object, 
-        // particular player can be found with playerData.find(item => item.PlayerName === 'player name')
+        // particular player can be found with Data.find(item => item.PlayerName === 'player name')
         const data = await collection.find({}).toArray();
         //Send response
         res.json(data);
@@ -37,11 +37,14 @@ app.get('/api/getPlayerStats', async (req, res) => {
 // Get all maps and return 
 app.get('/api/getMaps', async (req, res) => {
     try{
+        console.log("Retreiving all Maps from collection");
         // Get maps collection
         const collection = db.collection('Maps');
+        console.log("Got maps colleciton from DB");
         // Return data as JSON object, 
-        // particular object can be found with playerData.find(item => item.MapName === 'player name')
-        return data = await collection.find({}).toArray();
+        // particular object can be found with Data.find(item => item.MapName === 'map name')
+        const data = await collection.find({}).toArray();
+        res.json(data);
     }catch(error){
         console.error("Error when retrieving Maps table: " + error);
     }

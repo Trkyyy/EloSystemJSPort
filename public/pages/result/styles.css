@@ -1,0 +1,51 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+table {
+    border-collapse: collapse;
+    width: 80%;
+    max-width: 800px;
+    margin: 0 auto;
+    table-layout: fixed; /* Set table-layout to fixed */
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+    width: 25%; /* Set a fixed width for the table cells */
+    cursor: pointer; /* Add cursor pointer for interactive feedback */
+}
+
+td p {
+    font-weight: bold;
+    margin: 0;
+    text-align: center;
+}
+
+td img {
+    max-width: 100%;
+    max-height: 200px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Add a CSS class to represent the highlighted state */
+.highlighted {
+    color: #525219ce; /* Customize the highlight color as desired */
+}
+
+.grey-line {
+    border: none;
+    border-top: 3px solid #000000; /* Grey color */
+    width: 80%;
+    margin: 0 auto; /* Center the line horizontally */
+    border-radius: 1px; /* Adjust the radius value to control the roundness of the corners */
+  }
