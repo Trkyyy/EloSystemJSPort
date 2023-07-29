@@ -14,6 +14,7 @@ table {
     max-width: 800px;
     margin: 0 auto;
     table-layout: fixed; /* Set table-layout to fixed */
+    padding: 8px;
 }
 
 th, td {
@@ -48,4 +49,21 @@ td img {
     width: 80%;
     margin: 0 auto; /* Center the line horizontally */
     border-radius: 1px; /* Adjust the radius value to control the roundness of the corners */
+}
+
+/* Below is team styling */
+ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .teamTables {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  caption {
+    font-weight: bold;
+    margin-bottom: 10px;
   }
