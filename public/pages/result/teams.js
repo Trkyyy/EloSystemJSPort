@@ -94,6 +94,37 @@ function handleCheckboxChange(checkbox, teamNumber) {
     const cell = newRow.insertCell(0);
     cell.textContent = playerName;
     deleteRowWithEmptyCell(teamTable);
+
+    // If 4 players selected, disable other checkboxes
+    const rows = teamTable.getElementsByTagName("tr");
+    const teamCheckboxes = document.querySelectorAll(
+        `input[name="team${teamNumber}Checkbox"]`
+    );
+    var numPlayers = 0;
+    for (let i = 0; i < rows.length; i++) {
+        const cells = rows[i].getElementsByTagName("td");
+    
+        for (let j = 0; j < cells.length; j++) {
+          const cell = cells[j];
+    
+          if (cell.textContent.trim() != "") {
+            // Delete the row
+            numPlayers = numPlayers + 1;
+          }
+        }
+      }
+
+    if(rows.length > 0){
+        teamCheckboxes.forEach(checkbox => {
+            if(!checkbox.checked){
+                if(numPlayers == 4){
+                    checkbox.disabled = true;
+                }else{
+                    checkbox.disabled = false;
+                }
+            }
+        });
+    }
   } else {
     // If the checkbox was unchecked, remove the player from the team
     removePlayerFromTeam(playerName, teamNumber);
@@ -102,7 +133,16 @@ function handleCheckboxChange(checkbox, teamNumber) {
 
 // Function to remove a player from a team table
 function removePlayerFromTeam(playerName, teamNumber) {
-  const teamTable = document
+    //Enable all teamx checkboxes
+    const teamCheckboxes = document.querySelectorAll(
+        `input[name="team${teamNumber}Checkbox"]`
+    );
+    teamCheckboxes.forEach(checkbox => {
+        checkbox.disabled = false;
+
+    });
+
+    const teamTable = document
     .getElementById(`team${teamNumber}Table`)
     .getElementsByTagName("tbody")[0];
   const teamRows = teamTable.getElementsByTagName("tr");
