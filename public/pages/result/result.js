@@ -44,3 +44,14 @@ function updateDraws() {
     draws.options[0].text = "Draws";
   }
 }
+
+// Submission - Migration time 
+// So it begins...
+
+// Submit button
+const submitBtn = document.getElementById("submitBtn");
+
+team1Drop.addEventListener("change", (event) => {
+  updateDropdown(team2Drop, team1Drop.value);
+  updateDraws();
+});
