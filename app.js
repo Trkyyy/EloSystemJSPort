@@ -21,6 +21,22 @@ const configuration = new Configuration({
   apiKey: "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",
 });
 
+// Get specific player and return - ?playername=
+app.get("/api/getSpecificPlayerStats", async (req, res) => {
+  try {
+    const playerName = req.query.playerName
+    // Get playerStats collection
+    const collection = db.collection("Players");
+    // Return player stats as JSON object,
+    // particular player can be found with Data.find(item => item.PlayerName === 'player name')
+    const data = await collection.find({}).toArray();
+    //Send response
+    res.json(data.find(item => item.PlayerName === playerName));
+  } catch (error) {
+    console.error("Error when retrieving Player table: " + error);
+  }
+});
+
 // Get all player stats and return
 app.get("/api/getPlayerStats", async (req, res) => {
   try {

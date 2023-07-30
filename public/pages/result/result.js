@@ -48,10 +48,73 @@ function updateDraws() {
 // Submission - Migration time 
 // So it begins...
 
+
+
+// K-factor
+const kfac = 32 ;
+// Initial Elo
+const initElo = 1500;
+
+/* these will be like
+{
+    players: [{player object}],
+    teamRating: averagePlayerElo
+    expectedOutcome: 1 / (1 + 10^((Team 1 Rating - Team 2 Rating) / 400))
+}
+*/
+const teams = [
+    {
+        players: [],
+        teamRating: 1500,
+        expectedOutcome: 0.5
+    },
+    {
+        players: [],
+        teamRating: 1500,
+        expectedOutcome: 0.5
+    }
+];
+
+
+//Function to set teams
+async function setTeams(){
+    // Get both teams via text of checked boxes
+    for(let t = 0; t < 2; t++){
+        // Get t+1 checkboxes (1 and 2)
+        const checkboxes = document.querySelectorAll(
+            `input[name="team${t+1}Checkbox"]`
+        );    
+        
+        // Check if each checkbox is checked, if so get player from db and add to team players array 
+        checkboxes.forEach(async checkbox => {
+            if(checkbox.checked){
+                const res = await fetch("api/getSpecificPlayer?playerName=" + checkbox.value);
+                teams[t].players.push(res.json());
+            }
+        });
+    }
+
+    // Calculate teamRating and expectedOutcome
+    for(let t = 0; t < 2; t++){
+        // Team rating
+        team[t].teamRating = calculateAverageElo(team[t].players);
+
+        // Expected outcome
+        team[t].expectedOutcome
+    }
+
+
+}
+
+function calculateAverageElo(players){
+    return (players.reduce((sum, player) => sum + player.PlayerElo, 0))/4;
+}
+
+
+
+
 // Submit button
 const submitBtn = document.getElementById("submitBtn");
+submitBtn.addEventListener("click", (event) => {
 
-team1Drop.addEventListener("change", (event) => {
-  updateDropdown(team2Drop, team1Drop.value);
-  updateDraws();
 });
