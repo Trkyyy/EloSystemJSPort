@@ -100,7 +100,7 @@ async function setTeams(){
         team[t].teamRating = calculateAverageElo(team[t].players);
 
         // Expected outcome
-        team[t].expectedOutcome
+        team[t].expectedOutcome = 1 / (1 + 10^((team[1-t] - team[t]) / 400))
     }
 
 
