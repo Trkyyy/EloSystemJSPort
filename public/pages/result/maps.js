@@ -41,11 +41,13 @@ async function createMapsTable(maps) {
 
                 // Create table cell content (MapName and image)
                 const mapName = item.MapName;
+                const numMaps = item.Maps;
                 const imageSrc = 'maps/' + mapName + '.webp';
 
                 // Create table cell content (MapName and image)
                 cell.innerHTML = `
                     <p>${mapName}</p>
+                    <p>Maps: ${numMaps}</p>
                     <img src="${imageSrc}" alt="${mapName}">
                 `;
 
