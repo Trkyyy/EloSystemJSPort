@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Left 4 Elo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
@@ -32,11 +33,10 @@
   </section>
 
   <!-- devider -->
-  <hr class="grey-line">
+  <hr class="grey-line" style="margin-top: 20px; margin-bottom: 20px;">
 
   <!-- Teams/Players -->
   <section id="teams">
-    <h3>List of Players</h3>
     <div class="container">
       <table id="playerListTable"></table>
     </div>
@@ -76,18 +76,47 @@
   </section>
 
   <!-- devider -->
-  <hr class="grey-line">
+  <hr class="grey-line" style="margin-top: 20px; margin-bottom: 20px;">
+
+  <!-- Submit section -->
+  <div class="container" style="padding: 10px;">
+    <div class="row align-items-center">
+      <!-- First part -->
+      <div class="col-md-6">
+        <label id="resultMap" for="map" style="margin-right: 10px;">Map:</label>
+        <label id="resultLength" for="length">Length:</label>
+      </div>
+      <!-- Second part -->
+      <div class="col-md-6">
+        <select id="team1Wins" class="form-control mb-2">
+          <option value="">Team 1</option>
+        </select>
+        <select id="team2Wins" class="form-control mb-2">
+          <option value="">Team 2</option>
+        </select>
+        <select id="draws" class="form-control mb-2" disabled>
+          <option value="Draws">Draws</option>
+        </select>
+      </div>
+    </div>
+    <!-- Third part -->
+    <div class="row mt-3 " style="padding-left: 10px;">
+      <div class="col-md-12">
+        <button id="submitBtn" class="btn btn-dark" >Submit</button>
+      </div>
+    </div>
+  </div>
 
   <footer class="bg-dark text-white text-center py-3">
     <div class="container">
-      <p>&copy; 2023 Your Company. All rights reserved.</p>
+      <p>you're mother&trade;</p>
     </div>
   </footer>
 
   <script src="maps.js"></script>
   <script src="teams.js"></script>
+  <script src="result.js"></script>
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </body>
 </html>

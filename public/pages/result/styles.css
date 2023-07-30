@@ -79,3 +79,24 @@ ul {
   footer {
     margin-top: 30px;
   }
+
+  /* Custom styling for the form control elements */
+.form-control {
+  color: #fff;
+  background-color: #343a40;
+  border-color: #343a40;
+}
+
+/* Custom styling for the dropdown options */
+.form-control option {
+  color: #fff;
+  background-color: #343a40;
+}
+
+/* Custom styling for the disabled dropdown */
+.form-control:disabled,
+.form-control[disabled] {
+  color: #6c757d; /* Adjust the color for disabled text */
+  background-color: #495057; /* Adjust the background color for disabled state */
+  opacity: 1; /* Override the opacity to fully visible */
+}
