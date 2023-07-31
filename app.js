@@ -21,6 +21,8 @@ const configuration = new Configuration({
   apiKey: "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",
 });
 
+// ---------------------------------- PLAYER API METHODS --------------------------------------
+
 // Get specific player and return - ?playername=
 app.get("/api/getSpecificPlayerStats", async (req, res) => {
   try {
@@ -52,6 +54,36 @@ app.get("/api/getPlayerStats", async (req, res) => {
   }
 });
 
+// Update PlayerElo for a specific player
+app.put("/api/updatePlayerElo", async (req, res) => {
+  try {
+    const playerName = req.body.PlayerName;
+    const playerElo = req.body.PlayerElo; 
+
+    // Get playerStats collection
+    const collection = db.collection("Players");
+
+    // Find the player with the given playerName and update the PlayerElo field
+    const result = await collection.updateOne(
+      { PlayerName: playerName },
+      { $set: { PlayerElo: playerElo } }
+    );
+
+    if (result.modifiedCount === 1) {
+      // If the player was found and the PlayerElo field was updated successfully
+      res.json({ success: true, message: "PlayerElo updated successfully." });
+    } else {
+      // If the player with the given name was not found
+      res.json({ success: false, message: "Player not found." });
+    }
+  } catch (error) {
+    console.error("Error when updating PlayerElo: " + error);
+    res.json({ success: false, message: "Error when updating PlayerElo." });
+  }
+});
+
+// ------------------------------------ MAPS API Methods ---------------------------------------
+
 // Get all maps and return
 app.get("/api/getMaps", async (req, res) => {
   try {
@@ -68,6 +100,8 @@ app.get("/api/getMaps", async (req, res) => {
   }
 });
 
+// ----------------------------------- MATCHES API METHODS -------------------------------------
+
 // Get all matches and return
 app.get("/api/getMatches", async (req, res) => {
   try {
@@ -80,6 +114,9 @@ app.get("/api/getMatches", async (req, res) => {
     console.error("Error when retrieving Maps table: " + error);
   }
 });
+
+
+// --------------------------------- MongoDB things ----------------------------------------------
 
 //Mongo db connection
 client.connect((err) => {
