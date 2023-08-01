@@ -173,6 +173,7 @@ function calculateAndApplyWinnerEloChange(teamId){
   // Calculation
   winningTeam.players.forEach(player => {
     const eChange = kfac * (1 - winningTeam.expectedOutcome) * (1 - 1/(1+10^(player.playerElo - losingTeam.teamRating)/400));
+    player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[teamId].players.push(player);
   });
@@ -191,6 +192,7 @@ function calculateAndApplyLoserEloChange(teamId){
   // Calculation
   losingTeam.players.forEach(player => {
     const eChange = (-1 * kfac) * (1 - losingTeam.expectedOutcome) * (1/(1+10^(player.playerElo - winningTeam.teamRating)/400));
+    player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[teamId].players.push(player);
   });
@@ -209,12 +211,14 @@ function calculateAndApplyDrawEloChange(){
   // Calculation
   team1.players.forEach(player => {
     const eChange = kfac * (0.5 - team1.expectedOutcome) * (1/(1 + 10^( team2.teamRating - player.playerElo)/400));
+    player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[0].players.push(player);
   });
 
   team2.players.forEach(player => {
     const eChange = kfac * (0.5 - team2.expectedOutcome) * (1/(1 + 10^( team1.teamRating - player.playerElo)/400));
+    player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[1].players.push(player);
   });
@@ -244,11 +248,33 @@ function handleResult(t1Wins, t2Wins){
     calculateAndApplyDrawEloChange();
   }
 
-  // Iterate over both teams players and apply change
+  // Iterate over both teams players, apply change and display
   updatedTeams.forEach(team => {
-    team.players.forEach(player => {
+    var table = document.getElementById("team" + (team.id + 1) + "Results")
+
+    // Show results table
+    table.style.display = "block";
+
+    // Iterate over each player
+    for(var t=0; t < 4; t++){
+      var player = team.players[t];
       updatePlayerElo(player.PlayerName, player.PlayerElo);
-    })
+
+      // Update results table
+      // Get row
+      var row = table.getElementsByTagName("tr")[t+1];
+      var playerNameEl = row.getElementsByTagName("td")[0];
+      var eloChangeEl = row.getElementsByTagName("td")[1];
+      var finalEloEl = row.getElementsByTagName("td")[2];
+
+      // Set player name
+      playerNameEl.innerText = player.PlayerName;
+
+      // Display old elo and elo change
+      var eloChange = (player.eloChange > 0) ? (" + " +  Math.round(player.eloChange)) : (" - " +  Math.round(player.eloChange * -1));
+      eloChangeEl.innerText = Math.round(parseFloat(player.PlayerElo) - parseFloat(player.eloChange)) + eloChange;
+      finalEloEl.innerText = Math.round(player.PlayerElo);
+    }
   })
 }
 

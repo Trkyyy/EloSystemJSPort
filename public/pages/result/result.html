@@ -21,6 +21,9 @@
           <li class="nav-item">
             <a class="nav-link" href="../generate/generate.html">Generate</a>
           </li>
+          <li class="nav-item ">
+            <a class="nav-link" href="../admin/admin.html">Administration</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -103,6 +106,82 @@
     <div class="row mt-3 " style="padding-left: 10px;">
       <div class="col-md-12">
         <button id="submitBtn" class="btn btn-dark" >Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Both of the below tables are hidden by default -->
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="table-wrapper">
+          <table id="team1Results" class="table table-striped table-dark" style="display: none;">
+            <thead>
+              <tr>
+                <th>Player Name</th>
+                <th>Elo Change</th>
+                <th>Result Elo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="0">
+                <td id="playerName"></td>
+                <td id="eloChange"></td>
+                <td id="finalElo" style="font-weight: 600;"></td>
+              </tr>
+              <tr id="1">
+                <td id="playerName"></td>
+                <td id="eloChange"></td>
+                <td id="finalElo" style="font-weight: 600;"></td>
+              </tr>
+              <tr id="2">
+                <td id="playerName"></td>
+                <td id="eloChange"></td>
+                <td id="finalElo" style="font-weight: 600;"></td>
+              </tr>
+              <tr id="3">
+                <td id="playerName"></td>
+                <td id="eloChange"></td>
+                <td id="finalElo" style="font-weight: 600;"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="table-wrapper">
+          <table id="team2Results" class="table table-striped table-dark" style="display: none;">
+            <thead>
+              <tr>
+                <th>Player Name</th>
+                <th>Elo Change</th>
+                <th>Result Elo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr id="0">
+                <td id="playerName"></td>
+                <td id="eloChange"></td>
+                <td id="finalElo" style="font-weight: 600;"></td>
+              </tr>
+              <tr id="1">
+                <td id="playerName"></td>
+                <td id="eloChange"></td>
+                <td id="finalElo" style="font-weight: 600;"></td>
+              </tr>
+              <tr id="2">
+                <td id="playerName"></td>
+                <td id="eloChange"></td>
+                <td id="finalElo" style="font-weight: 600;"></td>
+              </tr>
+              <tr id="3">
+                <td id="playerName"></td>
+                <td id="eloChange"></td>
+                <td id="finalElo" style="font-weight: 600;"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
