@@ -57,8 +57,8 @@ app.get("/api/getPlayerStats", async (req, res) => {
 // Update PlayerElo for a specific player
 app.put("/api/updatePlayerElo", async (req, res) => {
   try {
-    const playerName = req.body.PlayerName;
-    const playerElo = req.body.PlayerElo; 
+    const playerName = req.query.playerName;
+    const playerElo = req.query.playerElo; 
 
     // Get playerStats collection
     const collection = db.collection("Players");

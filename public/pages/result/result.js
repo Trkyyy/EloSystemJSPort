@@ -122,20 +122,30 @@ const updatedTeams = [
 //Function to set teams
 async function setTeams(){
     // Get both teams via text of checked boxes
+    teams[0].players = [];
+    teams[1].players = [];
+    const promises = [];
     for(let t = 0; t < 2; t++){
-        // Get t+1 checkboxes (1 and 2)
-        const checkboxes = document.querySelectorAll(
-            `input[name="team${t+1}Checkbox"]`
-        );    
-        
-        // Check if each checkbox is checked, if so get player from db and add to team players array 
-        checkboxes.forEach(async checkbox => {
-            if(checkbox.checked){
-                const res = await fetch("api/getSpecificPlayer?playerName=" + checkbox.value);
-                teams[t].players.push(res.json());
-            }
-        });
+      // Get t+1 checkboxes (1 and 2)
+      const checkboxes = document.querySelectorAll(
+          `input[name="team${t+1}Checkbox"]`
+      );    
+      
+      // Check if each checkbox is checked, if so get player from db and add to team players array 
+      for (let i = 0; i < checkboxes.length; i++) {
+        const checkbox = checkboxes[i];
+        if (checkbox.checked) {
+          if(teams[t].players.find(item => item.PlayerName === checkbox.value) === undefined){
+            const res = await fetch(
+              "/api/getSpecificPlayerStats?playerName=" + checkbox.value
+            );
+            const data = await res.json();
+            teams[t].players.push(data);
+          }
+        }
+      }
     }
+    
 
     // Calculate teamRating and expectedOutcome
     for(let t = 0; t < 2; t++){
@@ -163,7 +173,7 @@ function calculateAndApplyWinnerEloChange(teamId){
   // Calculation
   winningTeam.players.forEach(player => {
     const eChange = kfac * (1 - winningTeam.expectedOutcome) * (1 - 1/(1+10^(player.playerElo - losingTeam.teamRating)/400));
-    player.PlayerElo = player.PlayerElo + eChange;
+    player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[teamId].players.push(player);
   });
 
@@ -181,7 +191,7 @@ function calculateAndApplyLoserEloChange(teamId){
   // Calculation
   losingTeam.players.forEach(player => {
     const eChange = (-1 * kfac) * (1 - losingTeam.expectedOutcome) * (1/(1+10^(player.playerElo - winningTeam.teamRating)/400));
-    player.PlayerElo = player.PlayerElo + eChange;
+    player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[teamId].players.push(player);
   });
 
@@ -190,31 +200,72 @@ function calculateAndApplyLoserEloChange(teamId){
 }
 
 // Function to calculate and apply (to the updatedTeams object) the elo changes of
-// each player in a drawing team
-function calculateAndApplyDrawerEloChange(teamId){
+// each player in both drawing teams
+function calculateAndApplyDrawEloChange(){
   // Get teams, makes referecning later easier
-  teamToUpdate = teams[teamId];
-  otherTeam = teams[1 - teamId];
+  team1 = teams[0];
+  team2 = teams[1];
 
   // Calculation
-  teamToUpdate.players.forEach(player => {
-    const eChange = kfac * (0.5 - teamToUpdate.expectedOutcome) * (1/(1 + 10^( otherTeam.teamRating -player.playerElo)/400));
-    player.PlayerElo = player.PlayerElo + eChange;
-    updatedTeams[teamId].players.push(player);
+  team1.players.forEach(player => {
+    const eChange = kfac * (0.5 - team1.expectedOutcome) * (1/(1 + 10^( team2.teamRating - player.playerElo)/400));
+    player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
+    updatedTeams[0].players.push(player);
+  });
+
+  team2.players.forEach(player => {
+    const eChange = kfac * (0.5 - team2.expectedOutcome) * (1/(1 + 10^( team1.teamRating - player.playerElo)/400));
+    player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
+    updatedTeams[1].players.push(player);
   });
 
   // Calculate updated teams average elo, incase we want to use it at some point
-  updatedTeams[teamId].teamRating = calculateAverageElo( updatedTeams[teamId].players);
+  updatedTeams[0].teamRating = calculateAverageElo( updatedTeams[0].players);
+  updatedTeams[1].teamRating = calculateAverageElo( updatedTeams[1].players);
 }
 
 // Function to gather result and orchestrate logic to update player elos and log match
-function handleResult(){
+function handleResult(t1Wins, t2Wins){
+  // If not draw, else draw
+  if(t1Wins != t2Wins){
+    // Determine winning and losing team
+    const winningTeam = teams[(t1Wins - t2Wins > 0) ? 0 : 1];
+    const losingTeam = teams[(t1Wins - t2Wins > 0) ? 1 : 0];
+    // Reset players array
+    updatedTeams[0].players = [];
+    updatedTeams[1].players = [];
 
+    //Calculate winning team elo changes
+    calculateAndApplyWinnerEloChange(winningTeam.id);
+    calculateAndApplyLoserEloChange(losingTeam.id);
+    
+
+  }else{
+    calculateAndApplyDrawEloChange();
+  }
+
+  // Iterate over both teams players and apply change
+  updatedTeams.forEach(team => {
+    team.players.forEach(player => {
+      updatePlayerElo(player.PlayerName, player.PlayerElo);
+    })
+  })
+}
+
+async function updatePlayerElo(playerName, playerElo){
+  try{
+    const res = await fetch("/api/updatePlayerElo?playerName=" + playerName + "&playerElo=" + playerElo, {
+      method: "PUT",
+    });
+    console.log('Updated Elo of ' + playerName + ' to ' + playerElo);
+  } catch(error){
+    console.error('Error calling the API:', error);
+  }
 }
 
 
 // Submit button
 const submitBtn = document.getElementById("submitBtn");
-submitBtn.addEventListener("click", (event) => {
-
+submitBtn.addEventListener("click", async (event) => {
+  setTeams().then(response => handleResult(team1Drop.value, team2Drop.value));
 });
