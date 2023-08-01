@@ -82,6 +82,27 @@ app.put("/api/updatePlayerElo", async (req, res) => {
   }
 });
 
+// Reset all player stats
+
+
+// Get all player stats and return
+app.get("/api/resetPlayerStats", async (req, res) => {
+  try {
+    // Get playerStats collection
+    const playerCollection = db.collection("Player");
+
+    // Update the "PlayerElo" field for all documents in the "Player" collection
+    const updateResult = await playerCollection.updateMany({}, { $set: { PlayerElo: 1500 } });
+    // Log modified count
+    const totalObj = playerCollection.countDocuments();
+    console.log(`${updateResult.modifiedCount}/${totalObj} players updated successfully.`);
+    //Send response
+    res.json(data);
+  } catch (error) {
+    console.error("Error when retrieving Player table: " + error);
+  }
+});
+
 // ------------------------------------ MAPS API Methods ---------------------------------------
 
 // Get all maps and return
@@ -109,7 +130,8 @@ app.get("/api/getMatches", async (req, res) => {
     const collection = db.collection("Match");
     // Return data as JSON object,
     // particular player can be found with playerData.find(item => item.MapName === 'player name')
-    return (data = await collection.find({}).toArray());
+    const data = await collection.find({}).toArray();
+    res.json(data);
   } catch (error) {
     console.error("Error when retrieving Maps table: " + error);
   }

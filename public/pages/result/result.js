@@ -48,38 +48,6 @@ function updateDraws() {
 // Submission - Migration time 
 // So it begins...
 
-/*
----------------------------- Begining revision -  31/07/2023 ---------------------------------------
-Made the decision to redesign the entire system from the ground up. 
-
-In this new system we don't take the severity of a win/loss into account
-This will keep the system straightforward
-If this proves to be ineffective or unfair then it can be readded, but for now I think this is best.
-
-Initial elo will now be 1500. Due to the sparatic nature of our play I have decided on a K-factor
-of 32 which should lead to a high level of volatility, though this can be adjusted easily.
-On the topic of volaitility, I am also removing our concept of time based volatitity as it is no
-longer fit for purpose given the infrequency of our play.
-
-A teams expected outcome is calculated with 1 / (1 + 10^((Team 1 Rating - Team 2 Rating) / 400))
-
-A winning players elo change is calculated with:
-    K * (1 - expectedOutcome) * (1 - 1/(1+10^(playerElo - enemeyTeamElo)/400))
-
-A losing players elo change is calculated with:
-    -K * (1 - expectedOutcome) * (1/(1+10^(playerElo - enemeyTeamElo)/400))
-
-A drawing players elo change is calculated with:
-    K * (0.5 - expectedOutcome) * (1 + 1/(1+10^(enemeyTeamElo - playerElo)/400))
-
-
-The above are a first draft of the revision, changes can/will be made.
-*/
-
-// K-factor
-const kfac = 32 ;
-// Initial Elo
-const initElo = 1500;
 
 /* these will be like
 {
@@ -155,24 +123,22 @@ async function setTeams(){
     // Split them up as team rating is required on the below
     for(let t = 0; t < 2; t++){
         // Expected outcome
-        teams[t].expectedOutcome = 1 / (1 + 10^((teams[1-t].teamRating - teams[t].teamRating) / 400));
+        teams[t].expectedOutcome = calculateExpectedOutcome(teams, t);
     }
 }
 
-async function calculateAverageElo(players){
-    return (players.reduce((sum, player) => sum + player.PlayerElo, 0))/4;
-}
+
 
 // Function to calculate and apply (to the updatedTeams object) the elo changes of
 // each player in the winning team
 function calculateAndApplyWinnerEloChange(teamId){
   // Get teams, makes referecning later easier
-  winningTeam = teams[teamId];
-  losingTeam = teams[1 - teamId];
+  var winningTeam = teams[teamId];
+  var losingTeam = teams[1 - teamId];
 
   // Calculation
   winningTeam.players.forEach(player => {
-    const eChange = kfac * (1 - winningTeam.expectedOutcome) * (1 - 1/(1+10^(player.playerElo - losingTeam.teamRating)/400));
+    const eChange = winnerEquation(winningTeam.expectedOutcome, player.playerElo, losingTeam.teamRating);
     player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[teamId].players.push(player);
@@ -186,12 +152,12 @@ function calculateAndApplyWinnerEloChange(teamId){
 // each player in the losing team
 function calculateAndApplyLoserEloChange(teamId){
   // Get teams, makes referecning later easier
-  losingTeam = teams[teamId];
-  winningTeam = teams[1 - teamId];
+  var losingTeam = teams[teamId];
+  var winningTeam = teams[1 - teamId];
 
   // Calculation
   losingTeam.players.forEach(player => {
-    const eChange = (-1 * kfac) * (1 - losingTeam.expectedOutcome) * (1/(1+10^(player.playerElo - winningTeam.teamRating)/400));
+    const eChange = loserEquation(losingTeam.expectedOutcome, player.playerElo, winningTeam.teamRating);
     player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[teamId].players.push(player);
@@ -201,23 +167,25 @@ function calculateAndApplyLoserEloChange(teamId){
   updatedTeams[teamId].teamRating = calculateAverageElo( updatedTeams[teamId].players);
 }
 
+
+
 // Function to calculate and apply (to the updatedTeams object) the elo changes of
 // each player in both drawing teams
 function calculateAndApplyDrawEloChange(){
   // Get teams, makes referecning later easier
-  team1 = teams[0];
-  team2 = teams[1];
+  var team1 = teams[0];
+  var team2 = teams[1];
 
   // Calculation
   team1.players.forEach(player => {
-    const eChange = kfac * (0.5 - team1.expectedOutcome) * (1/(1 + 10^( team2.teamRating - player.playerElo)/400));
+    const eChange = drawerEquation(team1.expectedOutcome, player.playerElo, team2.teamRating); 
     player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[0].players.push(player);
   });
 
   team2.players.forEach(player => {
-    const eChange = kfac * (0.5 - team2.expectedOutcome) * (1/(1 + 10^( team1.teamRating - player.playerElo)/400));
+    const eChange = drawerEquation(team2.expectedOutcome, player.playerElo, team1.teamRating);
     player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[1].players.push(player);
@@ -227,6 +195,8 @@ function calculateAndApplyDrawEloChange(){
   updatedTeams[0].teamRating = calculateAverageElo( updatedTeams[0].players);
   updatedTeams[1].teamRating = calculateAverageElo( updatedTeams[1].players);
 }
+
+
 
 // Function to gather result and orchestrate logic to update player elos and log match
 function handleResult(t1Wins, t2Wins){
@@ -276,17 +246,6 @@ function handleResult(t1Wins, t2Wins){
       finalEloEl.innerText = Math.round(player.PlayerElo);
     }
   })
-}
-
-async function updatePlayerElo(playerName, playerElo){
-  try{
-    const res = await fetch("/api/updatePlayerElo?playerName=" + playerName + "&playerElo=" + playerElo, {
-      method: "PUT",
-    });
-    console.log('Updated Elo of ' + playerName + ' to ' + playerElo);
-  } catch(error){
-    console.error('Error calling the API:', error);
-  }
 }
 
 
