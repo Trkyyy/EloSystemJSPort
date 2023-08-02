@@ -44,8 +44,13 @@ async function updatePlayerElo(playerName, playerElo){
 }
 
 // Calculate average elo of set of 4 players
-async function calculateAverageElo(players){
-    return (players.reduce((sum, player) => sum + player.PlayerElo, 0))/4;
+function calculateAverageElo(players){
+  var totalElo = 0;
+  players.forEach(player => {
+    totalElo = parseFloat(totalElo) + parseFloat(player.PlayerElo);
+  });
+  var averageElo = parseFloat(totalElo)/4;
+  return averageElo;
 }
 
 // Calculate expected outcome of two teams.

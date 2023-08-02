@@ -175,7 +175,7 @@ class Team {
 
     for (const player of this.players) {
       if (player && player.PlayerElo !== undefined) {
-        sum += player.PlayerElo;
+        sum += parseFloat(player.PlayerElo);
         validPlayers++;
       }
     }
@@ -264,24 +264,27 @@ function findClosestEloTeams() {
       let tB = allTeams[j];
 
       if (!tA.uniqueTeams(tB)) {
-        let eloDifference = Math.abs(
-          tA.calculateTeamEloAvg() - tB.calculateTeamEloAvg()
-        );
-        //Ensure that oposite match doesnt exist
-        // if(closestTeams.find(element => element == [tB,tA]) === undefined)
-        // { This makes only 1 team be returned, but still needs fixed
-        if (eloDifference < minEloDiff) {
-          closestTeams = [[tA, tB]];
-          minEloDiff = eloDifference;
-        } else if (eloDifference === minEloDiff) {
-          closestTeams.push([tA, tB]);
+        const reverse = closestTeams.find(set => set[0] == tB && set[1] == tA);
+        if(reverse === undefined){
+          let eloDifference = Math.abs(
+            tA.calculateTeamEloAvg() - tB.calculateTeamEloAvg()
+          );
+          //Ensure that oposite match doesnt exist
+  
+          closestTeams.push([tA, tB, eloDifference]);
         }
-        // }
       }
     }
   }
 
+  closestTeams.sort(sortByEloDifference);
+
   return closestTeams.slice(0, Math.min(3, closestTeams.length));
+}
+
+// Custom comparison function to sort based on the third element (eloDifference)
+function sortByEloDifference(a, b) {
+  return a[2] - b[2];
 }
 
 /* Function to add team details to tables
@@ -314,7 +317,7 @@ function addTeamsToUI(teamsArray) {
         const nameElementId = `sort${i}team${j + 1}playerName${k + 1}`;
         const eloElementId = `sort${i}team${j + 1}playerElo${k + 1}`;
         setTextById(nameElementId, players[k].PlayerName);
-        setTextById(eloElementId, players[k].PlayerElo);
+        setTextById(eloElementId, parseInt(players[k].PlayerElo));
       }
 
       // Set Average Elo
@@ -326,7 +329,7 @@ function addTeamsToUI(teamsArray) {
       );
       console.log(tempTeam);
       const elementId = `sort${i}team${j + 1}averageElo`;
-      setTextById(elementId, tempTeam.calculateTeamEloAvg());
+      setTextById(elementId, parseInt(tempTeam.calculateTeamEloAvg()));
     }
   }
 }
