@@ -57,7 +57,12 @@ async function rerunAllGames() {
         // Split them up as team rating is required on the below
         for(let t = 0; t < 2; t++){
             // Expected outcome - calculateExpectedOutcome sits within shared.js
-            teams[t].expectedOutcome = calculateExpectedOutcome(teams, t)
+            var expectedOutcome = calculateExpectedOutcome(teams);
+            if(t == 0){
+                teams[t].expectedOutcome = expectedOutcome
+            }else{
+                teams[t].expectedOutcome = 1 - expectedOutcome
+            }
         }
 
         // 0 is draw, > 0 is team 1 win, and < 0 is team 2 win
@@ -71,7 +76,7 @@ async function rerunAllGames() {
             
             // Apply winning player elo changes to allPlayers
             winningTeam.players.forEach(player => {
-                const eChange = winnerEquation(winningTeam.expectedOutcome, player.playerElo, losingTeam.teamRating);
+                const eChange = winnerEquation(winningTeam.expectedOutcome, player.PlayerElo, losingTeam.teamRating);
 
                 // Find player in all players and update
                 const allPlayersReference = allPlayers.find(fPlayer => fPlayer.PlayerName === player.PlayerName);
@@ -80,7 +85,7 @@ async function rerunAllGames() {
 
             // Apply winning player elo changes to allPlayers
             losingTeam.players.forEach(player => {
-                const eChange = loserEquation(losingTeam.expectedOutcome, player.playerElo, winningTeam.teamRating);
+                const eChange = loserEquation(losingTeam.expectedOutcome, player.PlayerElo, winningTeam.teamRating);
 
                 // Find player in all players and update
                 const allPlayersReference = allPlayers.find(fPlayer => fPlayer.PlayerName === player.PlayerName);
@@ -89,7 +94,7 @@ async function rerunAllGames() {
         }else {
             for(var t = 0; t < 2; t++){
                 teams[t].players.forEach(player => {
-                    const eChange = drawerEquation(teams[t].expectedOutcome, player.playerElo, teams[1-t].teamRating);
+                    const eChange = drawerEquation(teams[t].expectedOutcome, player.PlayerElo, teams[1-t].teamRating);
 
                     // Find player in all players and update
                     const allPlayersReference = allPlayers.find(fPlayer => fPlayer.PlayerName === player.PlayerName);

@@ -89,42 +89,47 @@ const updatedTeams = [
 
 //Function to set teams
 async function setTeams(){
-    // Get both teams via text of checked boxes
-    teams[0].players = [];
-    teams[1].players = [];
-    const promises = [];
-    for(let t = 0; t < 2; t++){
-      // Get t+1 checkboxes (1 and 2)
-      const checkboxes = document.querySelectorAll(
-          `input[name="team${t+1}Checkbox"]`
-      );    
-      
-      // Check if each checkbox is checked, if so get player from db and add to team players array 
-      for (let i = 0; i < checkboxes.length; i++) {
-        const checkbox = checkboxes[i];
-        if (checkbox.checked) {
-          if(teams[t].players.find(item => item.PlayerName === checkbox.value) === undefined){
-            const res = await fetch(
-              "/api/getSpecificPlayerStats?playerName=" + checkbox.value
-            );
-            const data = await res.json();
-            teams[t].players.push(data);
-          }
+  // Get both teams via text of checked boxes
+  teams[0].players = [];
+  teams[1].players = [];
+  const promises = [];
+  for(let t = 0; t < 2; t++){
+    // Get t+1 checkboxes (1 and 2)
+    const checkboxes = document.querySelectorAll(
+        `input[name="team${t+1}Checkbox"]`
+    );    
+    
+    // Check if each checkbox is checked, if so get player from db and add to team players array 
+    for (let i = 0; i < checkboxes.length; i++) {
+      const checkbox = checkboxes[i];
+      if (checkbox.checked) {
+        if(teams[t].players.find(item => item.PlayerName === checkbox.value) === undefined){
+          const res = await fetch(
+            "/api/getSpecificPlayerStats?playerName=" + checkbox.value
+          );
+          const data = await res.json();
+          teams[t].players.push(data);
         }
       }
     }
-    
+  }
+  
 
-    // Calculate teamRating and expectedOutcome
-    for(let t = 0; t < 2; t++){
-        // Team rating
-        teams[t].teamRating = calculateAverageElo(teams[t].players);
-    }
-    // Split them up as team rating is required on the below
-    for(let t = 0; t < 2; t++){
-        // Expected outcome
-        teams[t].expectedOutcome = calculateExpectedOutcome(teams, t);
-    }
+  // Calculate teamRating and expectedOutcome
+  for(let t = 0; t < 2; t++){
+      // Team rating
+      teams[t].teamRating = calculateAverageElo(teams[t].players);
+  }
+  // Split them up as team rating is required on the below
+  for(let t = 0; t < 2; t++){
+      // Expected outcome
+      var expectedOutcome = calculateExpectedOutcome(teams);
+      if(t == 0){
+          teams[t].expectedOutcome = expectedOutcome
+      }else{
+          teams[t].expectedOutcome = 1 - expectedOutcome
+      }   
+  }
 }
 
 
@@ -138,7 +143,7 @@ function calculateAndApplyWinnerEloChange(teamId){
 
   // Calculation
   winningTeam.players.forEach(player => {
-    const eChange = winnerEquation(winningTeam.expectedOutcome, player.playerElo, losingTeam.teamRating);
+    const eChange = winnerEquation(winningTeam.expectedOutcome, player.PlayerElo, losingTeam.teamRating);
     player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[teamId].players.push(player);
@@ -157,7 +162,7 @@ function calculateAndApplyLoserEloChange(teamId){
 
   // Calculation
   losingTeam.players.forEach(player => {
-    const eChange = loserEquation(losingTeam.expectedOutcome, player.playerElo, winningTeam.teamRating);
+    const eChange = loserEquation(losingTeam.expectedOutcome, player.PlayerElo, winningTeam.teamRating);
     player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[teamId].players.push(player);
@@ -178,14 +183,14 @@ function calculateAndApplyDrawEloChange(){
 
   // Calculation
   team1.players.forEach(player => {
-    const eChange = drawerEquation(team1.expectedOutcome, player.playerElo, team2.teamRating); 
+    const eChange = drawerEquation(team1.expectedOutcome, player.PlayerElo, team2.teamRating); 
     player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[0].players.push(player);
   });
 
   team2.players.forEach(player => {
-    const eChange = drawerEquation(team2.expectedOutcome, player.playerElo, team1.teamRating);
+    const eChange = drawerEquation(team2.expectedOutcome, player.PlayerElo, team1.teamRating);
     player.eloChange = eChange;
     player.PlayerElo = parseFloat(player.PlayerElo) + parseFloat(eChange);
     updatedTeams[1].players.push(player);
