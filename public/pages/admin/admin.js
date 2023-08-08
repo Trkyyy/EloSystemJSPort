@@ -16,6 +16,8 @@ rerunBtn.addEventListener("click", async (event) => {
 // Function which will grab all previous matchs and rerun them with current system configuration
 // Used mainly for testing changes to elo
 async function rerunAllGames() {
+    // get code for server
+    const code = window.prompt("Enter the code...");
     // Get all previous matches
     const matchesResponse = await fetch("/api/getMatches");
     const matches = await matchesResponse.json();
@@ -106,7 +108,7 @@ async function rerunAllGames() {
 
     allPlayers.forEach(player => {
         // This method sits within result.js
-        updatePlayerElo(player.PlayerName, player.PlayerElo)
+        updatePlayerElo(player.PlayerName, player.PlayerElo, code)
     });
 
     createPlayerTable(allPlayers);
@@ -117,7 +119,6 @@ async function resetPlayerStats() {
         allPlayers.forEach(player => {
             player.PlayerElo = 1500;
         })
-        console.log("Reset player stats");
     }catch(error){
         console.log("Error reseting player stats: " + error)
     }
@@ -224,6 +225,6 @@ async function addPlayer(playerName){
         console.log('Added new player: ' + playerName);
         alert('Added new player: ' + playerName);
       } catch(error){
-        console.error('Error calling the API:', error);
+        console.error('Error calling the API: ', error);
       }
 }

@@ -17,6 +17,7 @@
     "babel-plugin-polyfill-corejs3": "^0.8.2",
     "babel-plugin-polyfill-regenerator": "^0.5.1",
     "basic-auth": "^2.0.1",
+    "body-parser": "^1.20.2",
     "browserslist": "^4.21.9",
     "buffer-from": "^1.1.2",
     "busboy": "^1.6.0",

@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const { MongoClient } = require("mongodb");
+const bodyParser = require('body-parser');
 
 const uri = "mongodb://localhost:27017"; // Replace with your MongoDB URI
 const client = new MongoClient(uri, {
@@ -15,6 +16,7 @@ const app = express();
 const PORT = 3000; // You can use any port number you prefer
 
 app.use(express.static("public"));
+app.use(bodyParser.json());
 
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
@@ -59,22 +61,26 @@ app.put("/api/updatePlayerElo", async (req, res) => {
   try {
     const playerName = req.query.playerName;
     const playerElo = req.query.playerElo; 
+    const code = req.query.code; 
+    if(code == "b"){
+      // Get playerStats collection
+      const collection = db.collection("Players");
 
-    // Get playerStats collection
-    const collection = db.collection("Players");
+      // Find the player with the given playerName and update the PlayerElo field
+      const result = await collection.updateOne(
+        { PlayerName: playerName },
+        { $set: { PlayerElo: playerElo } }
+      );
 
-    // Find the player with the given playerName and update the PlayerElo field
-    const result = await collection.updateOne(
-      { PlayerName: playerName },
-      { $set: { PlayerElo: playerElo } }
-    );
-
-    if (result.modifiedCount === 1) {
-      // If the player was found and the PlayerElo field was updated successfully
-      res.json({ success: true, message: "PlayerElo updated successfully." });
-    } else {
-      // If the player with the given name was not found
-      res.json({ success: false, message: "Player not found." });
+      if (result.modifiedCount === 1) {
+        // If the player was found and the PlayerElo field was updated successfully
+        res.json({ success: true, message: "PlayerElo updated successfully." });
+      } else {
+        // If the player with the given name was not found
+        res.json({ success: false, message: "Player not found." });
+      }
+    }else{
+      res.json({ success: false, message: "Incorrect code..." });
     }
   } catch (error) {
     console.error("Error when updating PlayerElo: " + error);
@@ -156,6 +162,21 @@ app.get("/api/getMatches", async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error("Error when retrieving Maps table: " + error);
+  }
+});
+
+// Add a match to DB
+app.post('/addMatch', async (req, res) => {
+  const receivedMatch = req.body;
+  try{
+    const matchCollection = db.collection('Match');
+    // Insert match into DB
+    await matchCollection.insertOne(receivedMatch);
+
+    res.status(200).send('Match added to DB')
+  } catch (error){
+    console.error('Error: ', error);
+    res.status(500).send('An error occured')
   }
 });
 

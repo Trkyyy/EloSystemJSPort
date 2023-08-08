@@ -76,15 +76,15 @@ const initElo = 1500;
 const c = 0.5;
 
 // Call API to update player 
-async function updatePlayerElo(playerName, playerElo){
-    try{
-      const res = await fetch("/api/updatePlayerElo?playerName=" + playerName + "&playerElo=" + playerElo, {
-        method: "PUT",
-      });
-      console.log('Updated Elo of ' + playerName + ' to ' + playerElo);
-    } catch(error){
-      console.error('Error calling the API:', error);
-    }
+async function updatePlayerElo(playerName, playerElo, code){
+  try{
+    const res = await fetch("/api/updatePlayerElo?playerName=" + playerName + "&playerElo=" + playerElo + "&code=" + code, {
+      method: "PUT",
+    });
+    console.log('Updated Elo of ' + playerName + ' to ' + playerElo);
+  } catch(error){
+    console.error('Error calling the API:', error);
+  }
 }
 
 // Calculate average elo of set of 4 players

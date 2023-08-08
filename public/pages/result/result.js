@@ -205,6 +205,7 @@ function calculateAndApplyDrawEloChange(){
 
 // Function to gather result and orchestrate logic to update player elos and log match
 function handleResult(t1Wins, t2Wins){
+  const code = window.prompt("Enter the code...");
   // If not draw, else draw
   if(t1Wins != t2Wins){
     // Determine winning and losing team
@@ -249,8 +250,36 @@ function handleResult(t1Wins, t2Wins){
       var eloChange = (player.eloChange > 0) ? (" + " +  Math.round(player.eloChange)) : (" - " +  Math.round(player.eloChange * -1));
       eloChangeEl.innerText = Math.round(parseFloat(player.PlayerElo) - parseFloat(player.eloChange)) + eloChange;
       finalEloEl.innerText = Math.round(player.PlayerElo);
+
+      updatePlayerElo(player.PlayerName, player.PlayerElo, code)
     }
   })
+
+  const matchJSON = {
+    map: highlightedMap.MapName,
+    result: [t1Wins == "" ? 0 : parseInt(t1Wins), t2Wins == "" ? 0 : parseInt(t2Wins)],
+    team1: [
+      {name: updatedTeams[0].players[0].PlayerName},
+      {name: updatedTeams[0].players[1].PlayerName},
+      {name: updatedTeams[0].players[2].PlayerName},
+      {name: updatedTeams[0].players[3].PlayerName}
+    ],
+    team2: [
+      {name: updatedTeams[1].players[0].PlayerName},
+      {name: updatedTeams[1].players[1].PlayerName},
+      {name: updatedTeams[1].players[2].PlayerName},
+      {name: updatedTeams[1].players[3].PlayerName}
+    ]
+  }
+  const matchJSONString = JSON.stringify(matchJSON);
+
+  fetch('/addMatch', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: matchJSONString
+  });
 }
 
 
