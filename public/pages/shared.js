@@ -63,6 +63,9 @@ to 0.5 (as it should)
 ------------- the "i've been clawing my eyes out over nothing" revision -  02/08/2023 -------------
 Turns out 10^() just sucks, using Math.pow(10, x) works far better. Expected outcome is now working
 as I have expected it too, yipee
+
+I have adjusted the equation to devide by 200 instead of 400, a difference of 100 in this case 
+gives one team a 0.75 chance of winning 
 */
 
 // K-factor
@@ -99,12 +102,9 @@ function calculateExpectedOutcome(teams){
 
   // Calculate the absolute Elo difference between the teams
   const eloDifference = Math.abs(teams[0].teamRating - teams[1].teamRating);
-  if(eloDifference < 40){
-    return 0.5;
-  }
 
   // Calculate the expected outcome for Team A
-  const expectedOutcomeTeamA = 1 / (1 + Math.pow(10, eloDifference / 400));
+  const expectedOutcomeTeamA = 1 / (1 + Math.pow(10, eloDifference / 200));
 
   return expectedOutcomeTeamA;
 }

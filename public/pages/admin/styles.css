@@ -1,0 +1,8 @@
+.grey-line {
+    border: none;
+    border-top: 3px solid #000000; /* Grey color */
+    width: 80%;
+    margin: 0 auto; /* Center the line horizontally */
+    border-radius: 1px; /* Adjust the radius value to control the roundness of the corners */
+}
+

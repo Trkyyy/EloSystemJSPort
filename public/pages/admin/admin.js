@@ -193,3 +193,37 @@ async function createPlayerTable(players) {
       }
     }
   }
+
+
+
+// ----------------------------------- Add New player ----------------------------------------------
+// Get elements from the DOM
+const inputStringElement = document.getElementById('inputString');
+const logButton = document.getElementById('logButton');
+
+// Add click event listener to the button
+logButton.addEventListener('click', () => {
+  // Get the entered string
+  const enteredString = inputStringElement.value;
+  //Remove any whitespace
+  addPlayer(enteredString.replace(/\s/g,''))
+});
+
+
+async function addPlayer(playerName){
+    try{
+        const res = await fetch("/api/addPlayer?playerName=" + playerName, {
+          method: "PUT",
+        });
+
+        allPlayers.push({
+            PlayerName: playerName,
+            PlayerElo: 1500
+        });
+        createPlayerTable(allPlayers);
+        console.log('Added new player: ' + playerName);
+        alert('Added new player: ' + playerName);
+      } catch(error){
+        console.error('Error calling the API:', error);
+      }
+}

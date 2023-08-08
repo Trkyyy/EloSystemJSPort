@@ -82,10 +82,32 @@ app.put("/api/updatePlayerElo", async (req, res) => {
   }
 });
 
+// Update Add new player to db 
+app.put("/api/addPlayer", async (req, res) => {
+  try {
+    const playerName = req.query.playerName;
+
+    // Get playerStats collection
+    const collection = db.collection("Players");
+
+    const result = await collection.insertOne(
+      { PlayerName: playerName,
+        PlayerElo: 1500
+      }
+    );
+
+    if (result.modifiedCount === 1) {
+      res.json({ success: true, message: "PlayerElo successfully added." });
+    } else {
+      res.json({ success: false, message: "Player add failed." });
+    }
+  } catch (error) {
+    console.error("Error when updating PlayerElo: " + error);
+    res.json({ success: false, message: "Error when updating PlayerElo." });
+  }
+});
+
 // Reset all player stats
-
-
-// Get all player stats and return
 app.get("/api/resetPlayerStats", async (req, res) => {
   try {
     // Get playerStats collection
